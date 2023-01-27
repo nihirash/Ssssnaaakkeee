@@ -12,21 +12,26 @@ start:
     call Attr.init
     ld a, 7 : call Memory.setPage
     call Attr.drawRectangle
+    
     call Snake.reborn.fill
+    call Snake.drawSnake
+    call Snake.makeRabbit
 .loop
     ei
     dup 10
     halt
     edup
     call Snake.hideTail
+    
     call Snake.moveSnake
     call Snake.checkBounds
     call Snake.drawSnake
     jr .loop
-    
+
     include "modules/memory.asm"
     include "modules/im2.asm"
     include "modules/attr.asm"
+    include "modules/qaop.asm"
     include "snake.asm"
 
 stack_top equ $bdbb

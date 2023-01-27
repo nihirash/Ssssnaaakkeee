@@ -1,5 +1,9 @@
     module Snake
-MAX_LEN = 10
+MAX_LEN = 100
+WALL = #ff
+FOOD = 0240o
+HEAD = 0140o
+TAIL = 030o
 
 ;; Hides just last tile of snake
 hideTail:
@@ -21,10 +25,10 @@ drawSnake:
     
     ld e, (ix), d, (ix + 1)
     call Attr.xyToAttr
-    ld a, 0124o : ld (hl), a
+    ld a, HEAD : ld (hl), a
     inc ix : inc ix
     dec b
-    ld a, 034o 
+    ld a, TAIL 
 .loop
     ld e, (ix), d, (ix + 1)
     call Attr.xyToAttr
@@ -35,6 +39,32 @@ drawSnake:
 
 ;; Move snake's body
 moveSnake:
+    ld a, (direction), b, a
+    ld a, (QAOP.direction) : and a : jr z, .skipControls
+    ld c, a
+
+    ld a, UP : cp b : jr nz, .dnCheck
+    cp c : jr z, .skipControls
+    ld a, DOWN : cp c : jr z, .skipControls
+    jr  .write 
+.dnCheck
+    ld a, DOWN : cp b : jr nz, .ltCheck
+    cp c : jr z, .skipControls
+    ld a, UP : cp c : jr z, .skipControls
+    jr  .write
+.ltCheck
+    ld a, LEFT : cp b : jr nz, .rtCheck
+    cp c : jr z, .skipControls
+    ld a, RIGHT : cp c : jr z, .skipControls
+    jr  .write
+.rtCheck
+    cp c : jr z, .skipControls
+    ld a, LEFT : cp c : jr z, .skipControls
+.write
+    ld a,c
+    ld (direction), a
+.skipControls
+
     ld hl, (body) : push hl
     ld hl, last - 2
     ld de, last 
@@ -49,7 +79,8 @@ moveSnake:
     cp LEFT  : jr z, .left
     cp RIGHT : jr z, .right
     cp UP    : jr z, .up
-    inc h 
+    inc h
+    jr .exit 
 .up
     dec h
     jr .exit
@@ -66,7 +97,18 @@ checkBounds:
     ld de, (body)
     call Attr.xyToAttr
     ld a, (hl)
-    cp #ff : jr z, reborn
+    cp FOOD : jr z, .food
+    and a : jr nz, reborn
+    ret
+.food
+    ld a, HEAD : ld (hl), a
+    ld hl, len : inc (hl)
+makeRabbit:
+    ld a, (seed) : and 31 : ld e, a
+    call rnd : ld a, (seed) : and 23 : ld d,a
+    call Attr.xyToAttr
+    ld a, (hl) : and a : jr nz, makeRabbit
+    ld a, FOOD : ld (hl), a
     ret
 
 reborn:
@@ -90,10 +132,10 @@ reborn:
     ldir
     ret
 
-LEFT  = 0
-RIGHT = 1
-UP    = 2
-DOWN  = 3
+LEFT  = QAOP.LT
+RIGHT = QAOP.RT
+UP    = QAOP.UP
+DOWN  = QAOP.DN
 
 direction db LEFT
 len db 4
