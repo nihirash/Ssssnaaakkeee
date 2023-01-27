@@ -1,17 +1,35 @@
     device ZXSPECTRUM128
+    SLDOPT COMMENT WPMEM, LOGPOINT, ASSERTION
+
     org #6000
 start:
+    di
+    ld sp, stack_top
     call Memory.init
     xor a : out (#fe), a
     call Midi.init
     call im2On
+    call Attr.init
+    ld a, 7 : call Memory.setPage
+    call Attr.drawRectangle
+    call Snake.reborn.fill
+.loop
     ei
+    dup 10
     halt
-    jr $
+    edup
+    call Snake.hideTail
+    call Snake.moveSnake
+    call Snake.checkBounds
+    call Snake.drawSnake
+    jr .loop
+    
     include "modules/memory.asm"
     include "modules/im2.asm"
+    include "modules/attr.asm"
+    include "snake.asm"
 
-
+stack_top equ $bdbb
 
 ;; There're only two pages on ZX Spectrum 128 that fast on every model
 ;; It's page 2 and page 0
