@@ -104,8 +104,9 @@ checkBounds:
     ld a, HEAD : ld (hl), a
     ld hl, len : inc (hl)
 makeRabbit:
-    ld a, (seed) : and 31 : ld e, a
-    call rnd : ld a, (seed) : and 23 : ld d,a
+    call Text.showLen
+    call rnd : ld a, (seed) : and 31 :  ld e, a
+    call rnd : ld a, (seed) : and 23 : ld d,a 
     call Attr.xyToAttr
     ld a, (hl) : and a : jr nz, makeRabbit
     ld a, FOOD : ld (hl), a
@@ -130,6 +131,7 @@ reborn:
     ld de, direction
     ld bc, restart_len
     ldir
+    call Text.updateUI
     ret
 
 LEFT  = QAOP.LT
@@ -147,10 +149,10 @@ last
 restart 
     db LEFT
     db 4
-    dw  #1010
-    dw  #1011
-    dw  #1012
-    dw  #1013
+    dw  #0a10
+    dw  #0a11
+    dw  #0a12
+    dw  #0a13
 restart_len = $ - restart
 
     endmodule

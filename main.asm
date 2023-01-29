@@ -1,7 +1,7 @@
     device ZXSPECTRUM128
     SLDOPT COMMENT WPMEM, LOGPOINT, ASSERTION
 
-    org #6000
+    org #7000
 start:
     di
     ld sp, stack_top
@@ -12,12 +12,15 @@ start:
     call Attr.init
     ld a, 7 : call Memory.setPage
     call Attr.drawRectangle
-    
+
+    call Text.drawUI
+    call Text.updateUI
+
     call Snake.reborn.fill
     call Snake.drawSnake
     call Snake.makeRabbit
-.loop
     ei
+.loop
     dup 10
     halt
     edup
@@ -32,8 +35,10 @@ start:
     include "modules/im2.asm"
     include "modules/attr.asm"
     include "modules/qaop.asm"
+    include "modules/text.asm"
     include "snake.asm"
-
+line db "testing line output", 0 
+    assert $ < $bd00
 stack_top equ $bdbb
 
 ;; There're only two pages on ZX Spectrum 128 that fast on every model
@@ -45,10 +50,10 @@ stack_top equ $bdbb
     include "modules/int-player.asm"
     DISPLAY "Max song size: ", #ffff - $
 song:
-    incbin "mus/desert.nmf"
+    incbin "mus/sugar.nmf"
     db 0, 0
     DISPLAY "PAGE 0 Bytes free: ", #ffff - $
 ;; End of page 0 contents 
 
     savesna "snake.sna",start
-    
+    savetap "snake.tap", start

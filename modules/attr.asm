@@ -10,18 +10,25 @@ drawRectangle:
     ld (spSave), sp
     ld sp, #DB00
     ld hl, #0000
-    ld de, #ffff
-    ld ix, #ff00
-    ld iy, #00ff
+    ld de, #3232
+    ld ix, #3200
+    ld iy, #0032
     .16 push de
-    ld b,22
+    ld b,21
 1
     push ix
     .14 push hl
     push iy
     djnz 1b
     .16 push de
-
+    
+    ld de, #4747
+    ld hl, #4444
+    .7 push de
+    push hl
+    .3 push de
+    push hl
+    .4 push de
     ld sp, (spSave)
     ei
     ret

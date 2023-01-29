@@ -1,12 +1,12 @@
 ;; Int handler
 intHandler:
-    push af, bc, de, ix
+    push af, bc, de, hl, ix
     xor a : call Memory.setTempPage
     call BgMidi.tick
 	call QAOP.read
 	call rnd
     call Memory.restorePage
-    pop ix, de, bc, af
+    pop ix, hl, de, bc, af
     ei
     ret
 
