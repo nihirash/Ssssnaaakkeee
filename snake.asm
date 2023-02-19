@@ -103,6 +103,8 @@ checkBounds:
 .food
     ld a, HEAD : ld (hl), a
     ld hl, len : inc (hl)
+    ld a, (len) : ld b, a
+    ld a, (curLevel) : add 20 : cp b : jp z, nextLevel
 makeRabbit:
     call Text.showLen
     call rnd : ld a, (seed) : and 31 :  ld e, a
@@ -112,26 +114,27 @@ makeRabbit:
     ld a, FOOD : ld (hl), a
     ret
 
-reborn:
-;;; Hide all snake
-    ld a, (len), b, a
-    ld ix, body + 2
+nextLevel:
+    ld hl, curLevel
+    inc (hl)
+    call Effects.eff2
+    call reborn.noEff
+    ret
 
-    dec b
-    xor a
-.loop
-    ld e, (ix), d, (ix + 1)
-    call Attr.xyToAttr
-    ld (hl), a
-    inc ix : inc ix
-    djnz .loop
+reborn:
+    call Effects.eff1
+.noEff
+    call restoreLevel
     
 .fill
     ld hl, restart
     ld de, direction
     ld bc, restart_len
     ldir
+    call Text.drawUI
     call Text.updateUI
+    call drawSnake
+    call makeRabbit
     ret
 
 LEFT  = QAOP.LT

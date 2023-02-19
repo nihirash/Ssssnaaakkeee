@@ -1,7 +1,8 @@
 ;; Int handler
 intHandler:
     push af, bc, de, hl, ix
-    xor a : call Memory.setTempPage
+    ld a, (Memory.BANKM) : and #18
+	call Memory.setTempPage
     call BgMidi.tick
 	call QAOP.read
 	call rnd

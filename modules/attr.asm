@@ -70,7 +70,7 @@ fillA:
 
 ; A - Color
 cla:
-    ld a, 0103o
+    xor a
 .color
     di
     ld (spSave), sp

@@ -1,24 +1,30 @@
     device ZXSPECTRUM128
     SLDOPT COMMENT WPMEM, LOGPOINT, ASSERTION
-
+    org #4000
+    incbin "screen.scr"
     org #7000
 start:
     di
     ld sp, stack_top
     call Memory.init
-    xor a : out (#fe), a
     call Midi.init
     call im2On
-    call Attr.init
-    ld a, 7 : call Memory.setPage
-    call Attr.drawRectangle
+    
+    ei
+    xor a : out (#fe), a    
+    ld b,#ff
+1   halt
+    djnz 1b
 
+    call Attr.init
+    ld a, 7 : call Memory.setPage 
+    ei
+    call Effects.eff2
+    call restoreLevel
     call Text.drawUI
     call Text.updateUI
 
     call Snake.reborn.fill
-    call Snake.drawSnake
-    call Snake.makeRabbit
     ei
 .loop
     dup 10
@@ -36,8 +42,13 @@ start:
     include "modules/attr.asm"
     include "modules/qaop.asm"
     include "modules/text.asm"
+    include "modules/effects.asm"
     include "snake.asm"
-line db "testing line output", 0 
+    
+    include "levels.asm"
+buff:
+    display "Code ends: ", $
+    display "Code section left bytes: ", #bd00 - $
     assert $ < $bd00
 stack_top equ $bdbb
 
@@ -50,7 +61,7 @@ stack_top equ $bdbb
     include "modules/int-player.asm"
     DISPLAY "Max song size: ", #ffff - $
 song:
-    incbin "mus/sugar.nmf"
+    incbin "mus/desert.nmf"
     db 0, 0
     DISPLAY "PAGE 0 Bytes free: ", #ffff - $
 ;; End of page 0 contents 

@@ -23,7 +23,7 @@ drawUI:
 
 updateUI:
     ld hl, 8, (coords), hl
-    ld a, 1 : call dispA 
+    ld a, (curLevel) : inc a : call dispA 
 showLen:
     ld hl, #0010, (coords), hl
     ld a, (Snake.len) : call dispA
