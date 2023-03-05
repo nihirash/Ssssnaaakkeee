@@ -1,5 +1,5 @@
     module Text
-status_bar db "  Level 00  Len 00   ", #7f, " Nihirash ", 0
+status_bar db "  Nivel 00 Long 00   ", #7f, " Nihirash ", 0
 
 drawUI:
     ld hl, 0, (coords), hl

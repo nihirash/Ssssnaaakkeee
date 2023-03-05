@@ -77,6 +77,7 @@ sendBuffer:
     pop hl
     pop bc
     inc hl
+    push ix : pop ix
     djnz .transmit
     ret
 

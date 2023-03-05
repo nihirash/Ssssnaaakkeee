@@ -107,10 +107,19 @@ checkBounds:
     ld a, (curLevel) : add 20 : cp b : jp z, nextLevel
 makeRabbit:
     call Text.showLen
-    call rnd : ld a, (seed) : and 31 :  ld e, a
-    call rnd : ld a, (seed) : and 23 : ld d,a 
+    call drawSnake
+
+.recalc
+    call rnd : ld a, (seed) : and 31 : ld e, a
+    and a : jr z, .recalc
+    cp 30 : jr nc, .recalc
+.recalc2    
+    call rnd : ld a, (seed) : and 31 : ld d, a 
+    and a : jr z, .recalc2
+    cp 22 : jr nc, .recalc2
+
     call Attr.xyToAttr
-    ld a, (hl) : and a : jr nz, makeRabbit
+    ld a, (hl) : and a : jr nz, .recalc
     ld a, FOOD : ld (hl), a
     ret
 
@@ -133,7 +142,6 @@ reborn:
     ldir
     call Text.drawUI
     call Text.updateUI
-    call drawSnake
     call makeRabbit
     ret
 

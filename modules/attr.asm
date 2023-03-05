@@ -1,4 +1,6 @@
     module Attr
+font               equ #3d00
+
 init:
     di
     ld a,7 : call Memory.setTempPage
@@ -22,13 +24,7 @@ drawRectangle:
     djnz 1b
     .16 push de
     
-    ld de, #4747
-    ld hl, #4444
-    .7 push de
-    push hl
-    .3 push de
-    push hl
-    .4 push de
+    .16 push hl
     ld sp, (spSave)
     ei
     ret
@@ -88,5 +84,72 @@ cla:
     ret
 
 spSave dw 0
+
+
+; DE - coords
+; HL - string
+printAttr:
+    ld a, (hl)
+    or a : ret z
+    push hl : push de
+
+    sub 32
+    push de
+    ld l, a
+    ld h,0
+    dup 3
+    add hl, hl
+    edup
+    ld de, font
+    add hl, de
+    ld bc, hl
+    pop de
+
+    ld h, 0 : ld l, d
+    dup 5
+    add hl, hl
+    edup
+    ld d, #d8
+    add hl, de
+    ex hl, de
+
+   jr nz, .skp
+   ld a, 1
+.skp
+    ;ld h, a : rla : rla : rla : or h : ld (.charColor), a
+
+    ld hl, bc
+    ld b, 8
+.loop
+    ld a, (hl)
+
+    dup 8
+    rla
+    push af
+    ld a, 0
+    jr nc, 1F
+
+    ld a, (.charColor)
+1   ld (de), a
+    pop af
+    inc de
+    edup
+
+    push hl
+    ld hl, 32 - 8
+    add hl, de
+    ex hl, de
+    pop hl
+    inc hl
+    djnz .loop
+
+    pop de
+    ld hl, 7
+    add hl, de
+    ex hl, de
+    pop hl
+    inc hl
+    jp printAttr
+.charColor  db 150o
 
     endmodule
